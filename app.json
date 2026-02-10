@@ -1,0 +1,38 @@
+{
+  "name": "fnOS_Overseer",
+  "version": "1.0.0",
+  "description": "fnOS超管专属运维监控工具",
+  "author": "你的名字",
+  "type": "docker",
+  "category": "admin",  // 关键：标记为“超管专属应用”，fnOS自动归类到超管菜单
+  "arch": ["amd64", "arm64"],  // 适配fnOS的x86/ARM机型
+  "docker": {
+    "image": "你的镜像地址/fnos-overseer:latest",  // Docker一键拉取的地址
+    "ports": {
+      "8000/tcp": "auto"  // fnOS自动分配端口，无需用户指定
+    },
+    "volumes": {
+      "/app/config": "/volume1/docker/fnos-overseer/config",  // 自动挂载配置目录
+      "/app/data": "/volume1/docker/fnos-overseer/data"       // 自动挂载数据目录
+    },
+    "privileged": true,  // 允许读取硬件信息（fnOS官方模板默认）
+    "env": {
+      "TZ": "Asia/Shanghai",
+      "FNOS_ADMIN_ONLY": "true"  // 关键：告诉fnOS这是超管专属应用
+    }
+  },
+  "web": {
+    "path": "/su/fnOS_Overseer",  // 关键：自动绑定超管专属路径
+    "port": 8000,
+    "auth": "super_admin"  // 关键：fnOS自动添加超管鉴权，非超管访问直接403
+  },
+  "requirements": {
+    "os": "fnOS >= 4.0",
+    "role": "super_admin"  // 关键：仅超管能看到/安装这个应用
+  },
+  "permissions": [
+    "system:hardware:read",  // fnOS自动赋予硬件读取权限
+    "system:logs:read",      // fnOS自动赋予日志读取权限
+    "network:lan:only"       // fnOS自动限制仅LAN访问
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "cpu": {
+    "default": 15,
+    "Intel(R) Celeron(R) N5105": 10,
+    "Intel(R) Celeron(R) J4125": 10,
+    "Intel(R) Core(TM) i3-8100T": 35,
+    "Intel(R) Core(TM) i5-8500T": 35,
+    "AMD Ryzen 5 5600G": 65
+  },
+  "disk": {
+    "default_hdd": 6.5,
+    "default_ssd": 2.5,
+    "default_nvme": 3.5,
+    "idle_hdd": 0.8
+  },
+  "memory": {
+    "ddr4_stick": 3.0,
+    "ddr5_stick": 2.5
+  },
+  "base_system": 10
+}

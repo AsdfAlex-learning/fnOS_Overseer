@@ -1,0 +1,27 @@
+# 核心Web框架
+Flask==2.3.3
+gunicorn==21.2.0  # 生产环境替代Flask原生服务器，单worker
+
+# 硬件/系统监控
+psutil==5.9.6
+py-cpuinfo==9.0.0
+
+# 配置解析
+PyYAML==6.0.1
+python-dotenv==1.0.0  # 环境变量读取
+
+# 定时任务
+APScheduler==3.10.4
+
+# API请求
+requests==2.31.0
+
+# 报表生成
+jinja2==3.1.2  # 模板渲染
+
+# 邮件推送（默认推送方式）
+smtplib==0.1.1
+email-validator==2.1.0  # 邮箱格式校验
+
+# 性能优化
+memory-profiler==0.61.0  # 内存监控（开发阶段用）
