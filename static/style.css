@@ -1,0 +1,98 @@
+:root {
+  --bg: #f5f7fb;
+  --card-bg: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --primary: #1677ff;
+  --border: #e5e7eb;
+  --hero-bg: #4b5362;
+}
+
+html.dark-mode {
+  --bg: #0f172a;
+  --card-bg: #111827;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --border: #334155;
+  --hero-bg: #2d3748;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Layout */
+.container { max-width: 1000px; margin: 0 auto; padding: 16px; }
+.main-content { padding-top: 80px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+
+/* Components */
+.card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.btn {
+  display: inline-block; padding: 8px 16px; border-radius: 6px; text-decoration: none; cursor: pointer;
+  background: var(--primary); color: #fff; border: none; font-size: 14px;
+}
+.btn.ghost { background: transparent; color: var(--primary); border: 1px solid transparent; }
+.btn.ghost:hover { background: rgba(0,0,0,0.05); }
+
+.input, input, select {
+  width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--card-bg); color: var(--text);
+}
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+
+/* Nav */
+.app-nav { position: fixed; top: 0; width: 100%; background: var(--card-bg); border-bottom: 1px solid var(--border); z-index: 99; }
+.app-nav .container { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; padding-bottom: 10px; }
+.app-nav ul { display: flex; list-style: none; padding: 0; margin: 0; gap: 20px; }
+.app-nav a { text-decoration: none; color: var(--muted); font-weight: 500; }
+.app-nav a:hover { color: var(--text); }
+
+/* Hero */
+.hero { background: var(--hero-bg); color: #fff; padding: 40px 0; }
+.hero-title { font-size: 2rem; margin: 0 0 8px; }
+.hero-subtitle { color: rgba(255,255,255,0.8); margin-bottom: 20px; }
+
+/* Utils */
+.form-row { margin-bottom: 12px; }
+.form-row label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.form-desc { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; line-height: 1.4; }
+.actions { margin-top: 24px; display: flex; gap: 12px; align-items: center; }
+.hint { color: var(--muted); font-size: 0.9em; }
+.main-page-title { margin: 16px 0; font-size: 1.5rem; }
+
+/* Back to Top */
+.back-to-top {
+  position: fixed; bottom: 20px; right: 20px; width: 40px; height: 40px;
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 50%;
+  display: none; align-items: center; justify-content: center; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.back-to-top span { font-size: 20px; color: var(--text); }
+
+/* View Transitions API */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.transition-reverse::view-transition-old(root) {
+  z-index: 10000;
+}
+html.transition-reverse::view-transition-new(root) {
+  z-index: 1;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  font-size: 1.2rem;
+  padding: 6px 10px;
+  line-height: 1;
+}

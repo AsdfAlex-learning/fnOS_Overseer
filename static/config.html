@@ -5,43 +5,92 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>配置</title>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<style>
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 24px; }
-h1 { font-size: 20px; margin-bottom: 16px; }
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; }
-.row { margin-bottom: 10px; }
-label { display: block; font-size: 12px; color: #555; margin-bottom: 4px; }
-input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; }
-.btn { display: inline-block; background: #1677ff; color: #fff; text-decoration: none; padding: 10px 16px; border-radius: 6px; }
-.hint { margin-top: 8px; color: #666; }
-</style>
+<link rel="stylesheet" href="./style.css">
+<script src="./theme.js"></script>
 </head>
 <body>
-<h1>配置</h1>
+<header class="app-nav">
+  <div class="container">
+    <ul>
+      <li><a href="./index.html">首页</a></li>
+      <li><a href="./dynamic_report.html">动态报表</a></li>
+    </ul>
+    <button class="btn ghost theme-toggle" id="theme-toggle" onclick="window.__themeToggle()" aria-label="切换主题"></button>
+  </div>
+</header>
+<main class="container main-content">
+<h1 class="main-page-title">配置</h1>
 <div class="grid">
   <div class="card">
-    <h2>邮件</h2>
-    <div class="row"><label>SMTP_HOST</label><input id="SMTP_HOST"></div>
-    <div class="row"><label>SMTP_PORT</label><input id="SMTP_PORT" type="number"></div>
-    <div class="row"><label>SMTP_USER</label><input id="SMTP_USER"></div>
-    <div class="row"><label>SMTP_PASS</label><input id="SMTP_PASS" type="password"></div>
-    <div class="row"><label>SMTP_TLS</label><input id="SMTP_TLS" placeholder="true/false"></div>
-    <div class="row"><label>EMAIL_FROM</label><input id="EMAIL_FROM"></div>
-    <div class="row"><label>EMAIL_TO</label><input id="EMAIL_TO" placeholder="comma separated"></div>
+    <h2>邮件通知</h2>
+    <div class="form-row">
+      <label>SMTP_HOST</label>
+      <span class="form-desc">邮件服务器地址，如 smtp.qq.com 或 smtp.gmail.com</span>
+      <input id="SMTP_HOST">
+    </div>
+    <div class="form-row">
+      <label>SMTP_PORT</label>
+      <span class="form-desc">服务器端口，通常 SSL 为 465，非 SSL 为 25 或 587</span>
+      <input id="SMTP_PORT" type="number">
+    </div>
+    <div class="form-row">
+      <label>SMTP_USER</label>
+      <span class="form-desc">您的邮箱账号，如 example@qq.com</span>
+      <input id="SMTP_USER">
+    </div>
+    <div class="form-row">
+      <label>SMTP_PASS</label>
+      <span class="form-desc">邮箱授权码（非登录密码），需在邮箱设置中开启 SMTP 获取</span>
+      <input id="SMTP_PASS" type="password">
+    </div>
+    <div class="form-row">
+      <label>SMTP_TLS</label>
+      <span class="form-desc">是否启用加密，SSL/TLS 请选择 true，否则选择 false</span>
+      <select id="SMTP_TLS">
+        <option value="true">true (启用)</option>
+        <option value="false">false (禁用)</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>EMAIL_FROM</label>
+      <span class="form-desc">发件人显示名称或邮箱地址</span>
+      <input id="EMAIL_FROM">
+    </div>
+    <div class="form-row">
+      <label>EMAIL_TO</label>
+      <span class="form-desc">接收通知的邮箱，多个地址用英文逗号分隔</span>
+      <input id="EMAIL_TO" placeholder="comma separated">
+    </div>
   </div>
   <div class="card">
-    <h2>fnOS</h2>
-    <div class="row"><label>FNOS_BASE_URL</label><input id="FNOS_BASE_URL" placeholder="http://127.0.0.1:8000"></div>
-    <div class="row"><label>FNOS_SUPER_TOKEN</label><input id="FNOS_SUPER_TOKEN" type="password"></div>
-    <div class="row"><label>FNOS_AUTH_CHECK_PATH</label><input id="FNOS_AUTH_CHECK_PATH" placeholder="/api/v1/admin/me"></div>
-    <div class="row"><label>FNOS_HW_PATH</label><input id="FNOS_HW_PATH" placeholder="/api/v1/hardware"></div>
+    <h2>fnOS 系统连接</h2>
+    <div class="form-row">
+      <label>FNOS_BASE_URL</label>
+      <span class="form-desc">fnOS 的访问地址，需包含协议和端口，如 http://192.168.1.100:8000</span>
+      <input id="FNOS_BASE_URL" placeholder="http://127.0.0.1:8000">
+    </div>
+    <div class="form-row">
+      <label>FNOS_SUPER_TOKEN</label>
+      <span class="form-desc">fnOS 的超级管理员 Token，用于 API 鉴权</span>
+      <input id="FNOS_SUPER_TOKEN" type="password">
+    </div>
+    <div class="form-row">
+      <label>FNOS_AUTH_CHECK_PATH</label>
+      <span class="form-desc">身份验证检查接口路径，默认一般无需修改</span>
+      <input id="FNOS_AUTH_CHECK_PATH" placeholder="/api/v1/admin/me">
+    </div>
+    <div class="form-row">
+      <label>FNOS_HW_PATH</label>
+      <span class="form-desc">硬件信息获取接口路径，默认一般无需修改</span>
+      <input id="FNOS_HW_PATH" placeholder="/api/v1/hardware">
+    </div>
   </div>
 </div>
-<div style="margin-top:16px;">
+<div class="actions">
   <button class="btn" id="saveBtn">保存到 config.yaml</button>
   <span class="hint" id="hint"></span>
 </div>
+</main>
 <script>
 function load() {
   axios.get('/api/v1/config').then(res => {
