@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>配置</title>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 24px; }
+h1 { font-size: 20px; margin-bottom: 16px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; }
+.row { margin-bottom: 10px; }
+label { display: block; font-size: 12px; color: #555; margin-bottom: 4px; }
+input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; }
+.btn { display: inline-block; background: #1677ff; color: #fff; text-decoration: none; padding: 10px 16px; border-radius: 6px; }
+.hint { margin-top: 8px; color: #666; }
+</style>
+</head>
+<body>
+<h1>配置</h1>
+<div class="grid">
+  <div class="card">
+    <h2>邮件</h2>
+    <div class="row"><label>SMTP_HOST</label><input id="SMTP_HOST"></div>
+    <div class="row"><label>SMTP_PORT</label><input id="SMTP_PORT" type="number"></div>
+    <div class="row"><label>SMTP_USER</label><input id="SMTP_USER"></div>
+    <div class="row"><label>SMTP_PASS</label><input id="SMTP_PASS" type="password"></div>
+    <div class="row"><label>SMTP_TLS</label><input id="SMTP_TLS" placeholder="true/false"></div>
+    <div class="row"><label>EMAIL_FROM</label><input id="EMAIL_FROM"></div>
+    <div class="row"><label>EMAIL_TO</label><input id="EMAIL_TO" placeholder="comma separated"></div>
+  </div>
+  <div class="card">
+    <h2>fnOS</h2>
+    <div class="row"><label>FNOS_BASE_URL</label><input id="FNOS_BASE_URL" placeholder="http://127.0.0.1:8000"></div>
+    <div class="row"><label>FNOS_SUPER_TOKEN</label><input id="FNOS_SUPER_TOKEN" type="password"></div>
+    <div class="row"><label>FNOS_AUTH_CHECK_PATH</label><input id="FNOS_AUTH_CHECK_PATH" placeholder="/api/v1/admin/me"></div>
+    <div class="row"><label>FNOS_HW_PATH</label><input id="FNOS_HW_PATH" placeholder="/api/v1/hardware"></div>
+  </div>
+</div>
+<div style="margin-top:16px;">
+  <button class="btn" id="saveBtn">保存到 config.yaml</button>
+  <span class="hint" id="hint"></span>
+</div>
+<script>
+function load() {
+  axios.get('/api/v1/config').then(res => {
+    const data = (res.data && res.data.data) || {};
+    const env = data.env || {};
+    const ids = ['SMTP_HOST','SMTP_PORT','SMTP_USER','SMTP_TLS','EMAIL_FROM','EMAIL_TO','FNOS_BASE_URL','FNOS_AUTH_CHECK_PATH','FNOS_HW_PATH'];
+    ids.forEach(id => { if (env[id] !== undefined) document.getElementById(id).value = env[id]; });
+  }).catch(() => {});
+}
+document.getElementById('saveBtn').onclick = () => {
+  const ids = ['SMTP_HOST','SMTP_PORT','SMTP_USER','SMTP_PASS','SMTP_TLS','EMAIL_FROM','EMAIL_TO','FNOS_BASE_URL','FNOS_SUPER_TOKEN','FNOS_AUTH_CHECK_PATH','FNOS_HW_PATH'];
+  const payload = {};
+  ids.forEach(id => {
+    const v = document.getElementById(id).value;
+    if (v !== '') payload[id] = v;
+  });
+  axios.post('/api/v1/config', payload).then(res => {
+    document.getElementById('hint').textContent = '已保存';
+  }).catch(() => { document.getElementById('hint').textContent = '保存失败'; });
+};
+load();
+</script>
+</body>
+</html>

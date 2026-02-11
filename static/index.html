@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fnOS Overseer</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; margin: 24px; }
+h1 { font-size: 20px; margin-bottom: 16px; }
+.card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+.row { display: flex; gap: 16px; flex-wrap: wrap; }
+.btn { display: inline-block; background: #1677ff; color: #fff; text-decoration: none; padding: 10px 16px; border-radius: 6px; }
+.btn.secondary { background: #666; }
+.input { padding: 8px; border: 1px solid #ccc; border-radius: 6px; }
+</style>
+</head>
+<body>
+<h1>fnOS Overseer</h1>
+<div class="row">
+  <div class="card" style="flex:1; min-width:280px;">
+    <h2>动态模式</h2>
+    <p>通过后端 API 获取实时数据与报表。</p>
+    <p><a class="btn" href="./dynamic_report.html">打开动态报表</a></p>
+    <p><a class="btn secondary" href="./config.html">打开配置页</a></p>
+  </div>
+  <div class="card" style="flex:1; min-width:280px;">
+    <h2>静态模式</h2>
+    <p>直接浏览 data/reports 下的 HTML 文件。</p>
+    <div>
+      <label>日期：<input class="input" id="dateInput" type="date"></label>
+      <button class="btn" id="openBtn">打开静态日报</button>
+    </div>
+    <p id="hint"></p>
+  </div>
+</div>
+<script>
+const btn = document.getElementById("openBtn");
+const input = document.getElementById("dateInput");
+const hint = document.getElementById("hint");
+btn.onclick = () => {
+  const d = input.value || new Date().toISOString().slice(0,10);
+  const path = "../data/reports/report_" + d + ".html";
+  hint.innerHTML = '<a class="btn" href="' + path + '">打开 ' + path + '</a>';
+};
+</script>
+</body>
+</html>

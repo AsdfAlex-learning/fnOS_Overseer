@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>日报 {{ data.meta.date }}</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 24px; }
+h1 { font-size: 20px; margin-bottom: 16px; }
+.section { margin-bottom: 16px; }
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { border: 1px solid #eee; padding: 8px; text-align: left; }
+</style>
+</head>
+<body>
+<h1>fnOS Overseer 日报 {{ data.meta.date }}</h1>
+<div class="section">
+  <strong>生成时间:</strong> {{ data.meta.generated_at }}
+</div>
+<div class="section">
+  <h2>CPU</h2>
+  <div>使用率: {{ data.cpu.usage_percent }}%</div>
+  <div>型号: {{ data.cpu.info.model }}</div>
+  <div>核心: 物理 {{ data.cpu.info.physical_cores }} / 逻辑 {{ data.cpu.info.logical_cores }}</div>
+</div>
+<div class="section">
+  <h2>功耗</h2>
+  <div>总功耗: {{ data.power.total_watts }} W</div>
+  <ul>
+    <li>基础: {{ data.power.breakdown.base }} W</li>
+    <li>CPU: {{ data.power.breakdown.cpu }} W</li>
+    <li>磁盘: {{ data.power.breakdown.disk }} W</li>
+    <li>内存: {{ data.power.breakdown.memory }} W</li>
+  </ul>
+</div>
+<div class="section">
+  <h2>存储</h2>
+  <table class="table">
+    <thead><tr><th>设备</th><th>挂载点</th><th>类型</th><th>总容量(GB)</th><th>已用(GB)</th><th>使用率(%)</th></tr></thead>
+    <tbody>
+    {% for s in data.storage %}
+      <tr>
+        <td>{{ s.device }}</td>
+        <td>{{ s.mountpoint }}</td>
+        <td>{{ s.fstype }}</td>
+        <td>{{ s.usage.total_gb }}</td>
+        <td>{{ s.usage.used_gb }}</td>
+        <td>{{ s.usage.percent }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div class="section">
+  <h2>用户行为</h2>
+  <div>登录事件: {{ data.logs.login_events|length }} 条</div>
+  <div>操作事件: {{ data.logs.user_actions|length }} 条</div>
+</div>
+</body>
+</html>
