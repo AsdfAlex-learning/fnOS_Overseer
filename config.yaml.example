@@ -1,0 +1,32 @@
+# fnOS_Overseer Configuration Example
+
+# 基础配置 / Basic Settings
+app:
+  name: "fnOS_Overseer"
+  version: "1.0.0"
+  debug: false
+
+# 适配层配置 / Adapter Settings
+# 注意：API 地址和 Token 等敏感信息请在 .env 文件中配置 (FNOS_BASE_URL, FNOS_SUPER_TOKEN)
+# Note: Sensitive info like API URL and Token should be in .env
+adapter:
+  type: "fnos"
+  fnos:
+    timeout: 10 # API 请求超时时间 (秒)
+
+# 定时计划 / Schedule
+schedule:
+  report_time: "08:00" # 每日报表发送时间 (24小时制)
+
+# 性能与模式配置 / Performance & Mode
+performance:
+  collect_interval: 900      # 硬件数据采集间隔 (秒) / Data collection interval
+  web_mode: "static"         # "static" (静态报表) or "dynamic" (实时API)
+  web_auto_refresh: false    # 动态模式下是否自动刷新 / Auto refresh in dynamic mode
+  report_keep_days: 30       # 报表文件保留天数 / Retention days
+  cpu_core_limit: 1          # CPU 核心使用限制 / Max CPU cores
+  notify_channels: ["email"] # 启用的通知渠道 / Enabled notify channels
+
+# 推送配置说明 / Notification Config Note
+# 邮件配置 (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, etc.) 请在 .env 文件中设置
+# Email settings should be configured in .env file

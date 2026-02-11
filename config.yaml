@@ -1,0 +1,24 @@
+# 基础配置
+app:
+  name: "fnOS_Overseer"
+  version: "1.0.0"
+  debug: false
+
+# 适配层配置 (敏感配置如 FNOS_BASE_URL, FNOS_SUPER_TOKEN 请在 .env 中设置)
+adapter:
+  type: "fnos"
+  fnos:
+    timeout: 10
+
+# 定时计划
+schedule:
+  report_time: "08:00"
+
+# 性能与模式配置
+performance:
+  collect_interval: 900
+  web_mode: "static"
+  web_auto_refresh: false
+  report_keep_days: 30
+  cpu_core_limit: 1
+  notify_channels: ["email"]
