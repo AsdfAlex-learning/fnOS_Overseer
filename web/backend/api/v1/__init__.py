@@ -21,3 +21,7 @@ def require_super_admin(f):
         return f(*args, **kwargs)
 
     return wrapper
+
+
+# Register API routes
+from . import config, monitor, report, webhook
