@@ -1,12 +1,12 @@
 import os
 from functools import wraps
 import importlib
+from web.backend.models.data_models import ok, err
+from adapter.fnos.auth import Auth
 
 flask = importlib.import_module("flask")
 Blueprint = flask.Blueprint
 jsonify = flask.jsonify
-from web.backend.models.data_models import ok, err
-from adapter.fnos.auth import Auth
 
 bp = Blueprint("api_v1", __name__, url_prefix="/api/v1")
 
@@ -23,5 +23,5 @@ def require_super_admin(f):
     return wrapper
 
 
-# Register API routes
+# Register API routes - Import after bp definition to avoid circular import
 from . import config, monitor, report, webhook

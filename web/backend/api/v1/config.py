@@ -1,13 +1,13 @@
 import importlib
-
-flask = importlib.import_module("flask")
-request = flask.request
-jsonify = flask.jsonify
 from web.backend.api.v1 import bp, require_super_admin
 from core.config.config_manager import get_config, ConfigManager
 from web.backend.models.data_models import ok, err
 from pathlib import Path
 
+
+flask = importlib.import_module("flask")
+request = flask.request
+jsonify = flask.jsonify
 
 @bp.get("/config")
 @require_super_admin
