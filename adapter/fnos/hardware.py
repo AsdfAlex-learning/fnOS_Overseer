@@ -41,3 +41,8 @@ class HardwareReader:
         if isinstance(data, dict):
             base.update(data)
         return base
+
+
+# Convenience function for easy import
+def get_hardware_info(client: Optional[APIClient] = None) -> Dict[str, Any]:
+    return HardwareReader(client).get_hardware_info()
