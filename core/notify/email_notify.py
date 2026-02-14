@@ -1,10 +1,13 @@
 import os
 import smtplib
 import ssl
+import logging
 from typing import List, Optional, Tuple, Dict
 from email.mime.text import MIMEText
 from email.utils import formataddr
 from .base_notify import BaseNotify
+
+logger = logging.getLogger(__name__)
 
 
 class EmailNotify(BaseNotify):
@@ -46,32 +49,55 @@ class EmailNotify(BaseNotify):
         return [x.strip() for x in self.email_to_env.split(",") if x.strip()]
 
     def send(self, subject: str, content: str, to: Optional[List[str]] = None) -> bool:
+        # Validate configuration first
         ok, missing = self.validate_config()
         if not ok:
+            logger.error(f"Email configuration incomplete. Missing: {', '.join(missing)}")
             return False
+
         recipients = self._parse_recipients(to)
         if not recipients:
+            logger.error("No valid recipients found")
             return False
+
         msg = MIMEText(content, "plain", "utf-8")
         msg["Subject"] = subject
         msg["From"] = formataddr(("fnOS Overseer", self.email_from))
         msg["To"] = ", ".join(recipients)
+
         try:
             if self.smtp_tls and self.smtp_port == 465:
+                # Use SMTP_SSL for port 465 (implicit SSL)
                 context = ssl.create_default_context()
                 with smtplib.SMTP_SSL(
-                    self.smtp_host, self.smtp_port, context=context
+                    self.smtp_host, self.smtp_port, context=context, timeout=30
                 ) as server:
+                    logger.debug(f"Connecting to SMTP server {self.smtp_host}:{self.smtp_port} (SSL)")
                     server.login(self.smtp_user, self.smtp_pass)
                     server.sendmail(self.email_from, recipients, msg.as_string())
+                    logger.info(f"Email sent successfully to {recipients}")
             else:
-                with smtplib.SMTP(self.smtp_host, self.smtp_port) as server:
+                # Use regular SMTP with optional STARTTLS
+                with smtplib.SMTP(self.smtp_host, self.smtp_port, timeout=30) as server:
+                    logger.debug(f"Connecting to SMTP server {self.smtp_host}:{self.smtp_port}")
                     server.ehlo()
                     if self.smtp_tls:
                         server.starttls(context=ssl.create_default_context())
                         server.ehlo()
                     server.login(self.smtp_user, self.smtp_pass)
                     server.sendmail(self.email_from, recipients, msg.as_string())
+                    logger.info(f"Email sent successfully to {recipients}")
             return True
-        except Exception:
-            return False
+        except smtplib.SMTPAuthenticationError as e:
+            logger.error(f"SMTP authentication failed: {e}")
+        except smtplib.SMTPConnectError as e:
+            logger.error(f"Failed to connect to SMTP server {self.smtp_host}:{self.smtp_port}: {e}")
+        except smtplib.SMTPException as e:
+            logger.error(f"SMTP error occurred: {e}")
+        except ConnectionRefusedError as e:
+            logger.error(f"Connection refused by SMTP server: {e}")
+        except TimeoutError as e:
+            logger.error(f"SMTP connection timed out: {e}")
+        except Exception as e:
+            logger.error(f"Unexpected error sending email: {e}", exc_info=True)
+        return False
