@@ -20,7 +20,6 @@ requests==2.31.0
 jinja2==3.1.2  # 模板渲染
 
 # 邮件推送（默认推送方式）
-smtplib==0.1.1
 email-validator==2.1.0  # 邮箱格式校验
 
 # 性能优化
