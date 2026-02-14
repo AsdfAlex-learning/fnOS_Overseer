@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  fnos-overseer:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: fnos-overseer
+    ports:
+      - "${HOST_PORT:-8000}:8000"
+    environment:
+      - TZ=Asia/Shanghai
+      - PYTHONUNBUFFERED=1
+      # Email settings (set in .env or environment)
+      - SMTP_HOST=${SMTP_HOST:-smtp.example.com}
+      - SMTP_PORT=${SMTP_PORT:-465}
+      - SMTP_USER=${SMTP_USER:-your_email@example.com}
+      - SMTP_PASS=${SMTP_PASS:-your_auth_code_here}
+      - SMTP_TLS=${SMTP_TLS:-true}
+      - EMAIL_FROM=${EMAIL_FROM:-fnOS_Overseer <your_email@example.com>}
+      - EMAIL_TO=${EMAIL_TO:-admin@example.com}
+      # fnOS connection settings
+      - FNOS_BASE_URL=${FNOS_BASE_URL:-http://127.0.0.1:8000}
+      - FNOS_SUPER_TOKEN=${FNOS_SUPER_TOKEN:-}
+      - FNOS_AUTH_CHECK_PATH=${FNOS_AUTH_CHECK_PATH:-/api/v1/admin/me}
+      - FNOS_HW_PATH=${FNOS_HW_PATH:-/api/v1/hardware}
+      # Webhook security
+      - WEBHOOK_TOKEN=${WEBHOOK_TOKEN:-}
+    volumes:
+      # Mount config directory
+      - ../config.yaml:/app/config.yaml:ro
+      # Mount .env file if it exists
+      - ../.env:/app/.env:ro
+      # Data persistence
+      - ../logs:/app/logs
+      - ../data:/app/data
+    privileged: true
+    restart: unless-stopped
+    networks:
+      - fnos-overseer-network
+
+networks:
+  fnos-overseer-network:
+    driver: bridge
