@@ -30,3 +30,4 @@ logs/*
 !logs/.gitkeep
 data/reports/*
 !data/reports/.gitkeep
+.libs/
