@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fnOS Overseer</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/theme.js"></script>
+</head>
+<body>
+<header class="app-nav">
+  <div class="container">
+    <ul>
+      <li><a href="./index.html">首页</a></li>
+      <li><a href="./dynamic_report.html">动态报表</a></li>
+      <li><a href="./config.html">配置</a></li>
+    </ul>
+    <button class="btn ghost theme-toggle" id="theme-toggle" onclick="window.__themeToggle()" aria-label="切换主题"></button>
+  </div>
+</header>
+<section class="hero main-content">
+  <div class="container">
+    <h1></h1>
+    <h1 class="hero-title">fnOS Overseer : 轻量监控与报表</h1>
+    <p class="hero-subtitle">实时查看系统状态，生成静态日报文件。</p>
+    <div class="hero-actions">
+      <a class="btn" href="./dynamic_report.html">打开动态报表</a>
+      <a class="btn ghost" href="./config.html">打开配置页</a>
+    </div>
+  </div>
+</section>
+<main class="container main-content">
+  <div class="grid">
+    <div class="card">
+      <h2>动态模式</h2>
+      <p>通过后端 API 获取实时数据与报表。</p>
+      <a class="btn" href="./dynamic_report.html">打开动态报表</a>
+    </div>
+    <div class="card">
+      <h2>静态模式</h2>
+      <p>直接浏览 data/reports 下的 HTML 文件。</p>
+      <div class="form-row">
+        <label>日期</label>
+        <input class="input" id="dateInput" type="date">
+      </div>
+      <button class="btn" id="openBtn">打开静态日报</button>
+      <p id="hint" class="hint"></p>
+    </div>
+  </div>
+</main>
+<script>
+const btn = document.getElementById("openBtn");
+const input = document.getElementById("dateInput");
+const hint = document.getElementById("hint");
+btn.onclick = () => {
+  const d = input.value || new Date().toISOString().slice(0,10);
+  const path = "../data/reports/report_" + d + ".html";
+  hint.innerHTML = '<a class="btn" href="' + path + '">打开 ' + path + '</a>';
+};
+</script>
+<div class="back-to-top" id="backTop"><span>↑</span></div>
+<script>
+const backTop = document.getElementById('backTop');
+window.addEventListener('scroll', () => {
+  backTop.style.display = window.scrollY > 200 ? 'flex' : 'none';
+});
+backTop.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+</script>
+</body>
+</html>
