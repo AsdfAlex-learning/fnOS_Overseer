@@ -1,7 +1,6 @@
 import psutil
 import json
 import os
-import platform
 import logging
 
 # Configure basic logging
@@ -34,21 +33,35 @@ class CPUMonitor:
             return {}
 
     def _get_cpu_model(self):
+        """
+        Get CPU model for fnOS (Linux-based NAS).
+
+        This method is optimized for Linux systems.
+        """
         try:
-            # Platform specific CPU model retrieval
-            system = platform.system()
-            if system == "Darwin":
-                # macOS
-                command = "sysctl -n machdep.cpu.brand_string"
-                return os.popen(command).read().strip()
-            elif system == "Linux":
-                # Linux
-                command = "cat /proc/cpuinfo | grep 'model name' | uniq | cut -d: -f2"
-                return os.popen(command).read().strip()
-            elif system == "Windows":
-                return platform.processor()
-            else:
-                return "Unknown CPU"
+            # Linux: Get CPU model from /proc/cpuinfo
+            with open("/proc/cpuinfo", "r") as f:
+                cpuinfo = f.read()
+
+            # Extract model name using grep
+            import subprocess
+            result = subprocess.run(
+                ["grep", "-m", "1", "-i", "^model name", cpuinfo],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+
+            if result.returncode == 0:
+                return result.stdout.strip()
+
+            # Fallback: try to find 'model name' directly
+            for line in cpuinfo.split('\n'):
+                if line.startswith('model name'):
+                    return line.split(':', 1)[1].strip()
+
+            return "Unknown CPU"
+
         except Exception as e:
             logger.error(f"Failed to get CPU model: {e}")
             return "Unknown CPU"
