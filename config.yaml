@@ -22,3 +22,32 @@ performance:
   report_keep_days: 30
   cpu_core_limit: 1
   notify_channels: ["email"]
+
+# 硬件 TDP 配置 (用户自定义硬件功耗参数)
+hardware_tdp:
+  cpu_default: 15  # CPU 默认 TDP (瓦特)
+  hdd_idle: 0.8  # HDD 待机功耗
+  hdd_active: 6.5  # HDD 工作功耗
+  ssd_power: 2.5  # SATA SSD 功耗
+  nvme_power: 3.5  # NVMe SSD 功耗
+  ddr4_stick: 3.0  # DDR4 内存条功耗
+  ddr5_stick: 2.5  # DDR5 内存条功耗
+
+# Home Assistant 集成配置
+home_assistant:
+  enabled: false  # 是否启用 Home Assistant 传感器
+  # 外部功耗监控数据源（优先级从高到低）
+  power_source: "internal"  # internal (内部估算) | ha_sensors (HA传感器) | mqtt (MQTT) | api (外部API)
+  # HA 传感器配置
+  ha_entity_power: "sensor.fnos_overseer_total_power"  # 总功耗传感器实体ID
+  ha_entity_cpu: "sensor.fnos_overseer_cpu_power"  # CPU功耗传感器实体ID
+  # MQTT 配置
+  mqtt_broker: ""  # MQTT 服务器地址
+  mqtt_port: 1883  # MQTT 端口
+  mqtt_topic: "fnos/overseer/power"  # MQTT 主题
+  mqtt_username: ""  # MQTT 用户名
+  mqtt_password: ""  # MQTT 密码
+  # 外部 API 配置
+  external_power_api: ""  # 外部功耗监控 API 地址
+  external_power_api_token: ""  # API Token
+  external_power_poll_interval: 60  # 外部 API 轮询间隔(秒)
