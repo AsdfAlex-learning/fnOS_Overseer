@@ -1,18 +1,18 @@
 import importlib
 from web.backend.api.v1 import bp, require_super_admin
-from core.config.config_manager import get_config, ConfigManager
+from core.config import ConfigManager
 from web.backend.models.data_models import ok, err
 from pathlib import Path
-
 
 flask = importlib.import_module("flask")
 request = flask.request
 jsonify = flask.jsonify
 
+
 @bp.get("/config")
 @require_super_admin
 def get_cfg():
-    return jsonify(ok(get_config(mask=True)))
+    return jsonify(ok(ConfigManager().get_config(mask=True)))
 
 
 @bp.post("/config")
@@ -78,18 +78,9 @@ def update_cfg():
                 encoding="utf-8",
             )
 
-        # Reload config manager
-        # Since we modified files, we need to re-instantiate or clear global cache if any
-        # The get_config() function creates a new ConfigManager instance if _GLOBAL is None,
-        # but here we want to force reload.
-        # Actually ConfigManager() constructor reloads everything.
-        # But we need to update the _GLOBAL instance used by get_config
-        from core.config import config_manager
+        return jsonify(ok(ConfigManager().get_config(mask=True)))
 
-        config_manager._GLOBAL = ConfigManager()
-
-        return jsonify(ok(config_manager.get_config(mask=True)))
     except Exception as e:
-        # It's better to log error here
-        print(f"Update config failed: {e}")
+        import logging
+        logging.error(f"Update config failed: {e}", exc_info=True)
         return jsonify(err(500, "update_failed")), 500
