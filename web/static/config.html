@@ -119,6 +119,97 @@
       <input id="schedule.report_time" type="time">
     </div>
   </div>
+  <div class="card">
+    <h2>硬件 TDP 配置</h2>
+    <p class="form-desc">自定义硬件功耗参数，用于更准确的功耗估算。留空则使用默认值。</p>
+    <div class="form-row">
+      <label>CPU 默认 TDP (瓦特)</label>
+      <span class="form-desc">CPU 的热设计功耗，通常 15-95W</span>
+      <input id="HARDWARE_TDP_CPU" type="number" placeholder="15" min="10" max="200">
+    </div>
+    <div class="form-row">
+      <label>HDD 待机功耗 (瓦特)</label>
+      <span class="form-desc">硬盘待机时的功耗，通常 0.5-1.0W</span>
+      <input id="HARDWARE_TDP_HDD_IDLE" type="number" placeholder="0.8" min="0" max="5" step="0.1">
+    </div>
+    <div class="form-row">
+      <label>HDD 工作功耗 (瓦特)</label>
+      <span class="form-desc">硬盘读写时的功耗，通常 5-10W</span>
+      <input id="HARDWARE_TDP_HDD_ACTIVE" type="number" placeholder="6.5" min="0" max="20" step="0.1">
+    </div>
+    <div class="form-row">
+      <label>SATA SSD 功耗 (瓦特)</label>
+      <span class="form-desc">SATA SSD 功耗，通常 2-4W</span>
+      <input id="HARDWARE_TDP_SSD" type="number" placeholder="2.5" min="0" max="10" step="0.1">
+    </div>
+    <div class="form-row">
+      <label>NVMe SSD 功耗 (瓦特)</label>
+      <span class="form-desc">NVMe SSD 功耗，通常 3-6W</span>
+      <input id="HARDWARE_TDP_NVME" type="number" placeholder="3.5" min="0" max="15" step="0.1">
+    </div>
+    <div class="form-row">
+      <label>内存功耗 (每条，瓦特)</label>
+      <span class="form-desc">DDR4 或 DDR5 内存条功耗，通常 2.5-4W</span>
+      <input id="HARDWARE_TDP_MEMORY" type="number" placeholder="3.0" min="0" max="10" step="0.1">
+    </div>
+  </div>
+  <div class="card">
+    <h2>Home Assistant 集成</h2>
+    <p class="form-desc">配置 Home Assistant 集成接口。留空则不启用。</p>
+    <div class="form-row">
+      <label>启用 Home Assistant</label>
+      <select id="HA_ENABLED">
+        <option value="false">false (禁用)</option>
+        <option value="true">true (启用)</option>
+      </select>
+    </div>
+    <div id="ha-sensors-config" style="display: none;">
+      <div class="form-row">
+        <label>功耗数据源</label>
+        <select id="HA_POWER_SOURCE">
+          <option value="internal">internal (内部估算)</option>
+          <option value="ha_sensors">ha_sensors (HA 传感器)</option>
+          <option value="mqtt">mqtt (MQTT)</option>
+          <option value="api">api (外部 API)</option>
+        </select>
+      </div>
+      <div id="ha-sensors-config-item" class="form-row">
+        <label>总功耗传感器实体 ID</label>
+        <input id="HA_ENTITY_POWER" placeholder="sensor.fnos_overseer_total_power">
+      </div>
+      <div id="ha-mqtt-config" style="display: none;">
+        <div class="form-row">
+          <label>MQTT Broker 地址</label>
+          <input id="MQTT_BROKER" placeholder="homeassistant.local">
+        </div>
+        <div class="form-row">
+          <label>MQTT 端口</label>
+          <input id="MQTT_PORT" type="number" placeholder="1883">
+        </div>
+        <div class="form-row">
+          <label>MQTT 主题</label>
+          <input id="MQTT_TOPIC" placeholder="fnos/overseer/power">
+        </div>
+        <div class="form-row">
+          <label>MQTT 用户名</label>
+          <input id="MQTT_USERNAME" placeholder="">
+        </div>
+        <div class="form-row">
+          <label>MQTT 密码</label>
+          <input id="MQTT_PASSWORD" type="password" placeholder="">
+        </div>
+      </div>
+      <div id="ha-api-config" style="display: none;">
+        <div class="form-row">
+          <label>Home Assistant API 地址</label>
+          <input id="HA_API_URL" placeholder="http://homeassistant:8123/api">
+        </div>
+        <div class="form-row">
+          <label>API Token (Long-lived)</label>
+          <input id="HA_API_TOKEN" type="password" placeholder="">
+        </div>
+      </div>
+  </div>
 </div>
 <div class="actions">
   <button class="btn" id="saveBtn">保存到 config.yaml</button>
@@ -126,24 +217,23 @@
 </div>
 </main>
 <script>
-  const CACHE_KEY = 'config_cache';
-  const CACHE_DURATION = 60 * 1000; // 60 seconds
+const CACHE_KEY = 'config_cache';
+const CACHE_DURATION = 60 * 1000; // 60 seconds
 
-  function load() {
+function load() {
     const populateForm = (data) => {
       const env = data.env || {};
       const yaml = data.yaml || {};
-      
+
       const ids = [
         'SMTP_HOST','SMTP_PORT','SMTP_USER','SMTP_TLS','EMAIL_FROM','EMAIL_TO',
         'FNOS_BASE_URL','FNOS_AUTH_CHECK_PATH','FNOS_HW_PATH'
       ];
-      ids.forEach(id => { 
+      ids.forEach(id => {
         if (env[id] !== undefined) {
-          document.getElementById(id).value = env[id]; 
+          document.getElementById(id).value = env[id];
         }
       });
-
       // Handle nested yaml config using dot notation ids
       const nestedIds = [
         'schedule.report_time',
@@ -152,7 +242,6 @@
         'performance.report_keep_days',
         'performance.cpu_core_limit'
       ];
-      
       nestedIds.forEach(id => {
         const parts = id.split('.');
         let val = yaml;
@@ -164,7 +253,6 @@
         }
       });
     };
-
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -178,29 +266,45 @@
     } catch (e) {
       console.error('Cache parse error', e);
     }
-  
+
     axios.get('/api/v1/config').then(res => {
       const data = (res.data && res.data.data) || {};
-      
+
       // Save to cache
       localStorage.setItem(CACHE_KEY, JSON.stringify({
         timestamp: Date.now(),
         data: data
       }));
-      
+
       populateForm(data);
     }).catch(() => {});
   }
 
-  document.getElementById('saveBtn').onclick = () => {
+document.getElementById('saveBtn').onclick = () => {
     const ids = [
       'SMTP_HOST','SMTP_PORT','SMTP_USER','SMTP_PASS','SMTP_TLS','EMAIL_FROM','EMAIL_TO',
-      'FNOS_BASE_URL','FNOS_SUPER_TOKEN','FNOS_AUTH_CHECK_PATH','FNOS_HW_PATH',
+      'FNOS_BASE_URL','FNOS_AUTH_CHECK_PATH','FNOS_HW_PATH',
       'schedule.report_time',
       'performance.collect_interval',
       'performance.web_mode',
       'performance.report_keep_days',
-      'performance.cpu_core_limit'
+      'performance.cpu_core_limit',
+      'HARDWARE_TDP_CPU',
+      'HARDWARE_TDP_HDD_IDLE',
+      'HARDWARE_TDP_HDD_ACTIVE',
+      'HARDWARE_TDP_SSD',
+      'HARDWARE_TDP_NVME',
+      'HARDWARE_TDP_MEMORY',
+      'HA_ENABLED',
+      'HA_POWER_SOURCE',
+      'HA_ENTITY_POWER',
+      'MQTT_BROKER',
+      'MQTT_PORT',
+      'MQTT_TOPIC',
+      'MQTT_USERNAME',
+      'MQTT_PASSWORD',
+      'HA_API_URL',
+      'HA_API_TOKEN'
     ];
     const payload = {};
     ids.forEach(id => {
@@ -208,12 +312,12 @@
       if (el) {
         const v = el.value;
         if (v !== '') {
-            // Check if it's a number input to convert type
-            if (el.type === 'number') {
+          // Check if it's a number input to convert type
+          if (el.type === 'number') {
                 payload[id] = Number(v);
-            } else {
+          } else {
                 payload[id] = v;
-            }
+          }
         }
       }
     });
@@ -227,7 +331,55 @@
       document.getElementById('hint').textContent = '已保存';
     }).catch(() => { document.getElementById('hint').textContent = '保存失败'; });
   };
-  load();
-  </script>
+
+// Home Assistant config visibility toggle
+document.getElementById('HA_ENABLED').addEventListener('change', function() {
+  const enabled = this.value === 'true';
+  const sensorsConfig = document.getElementById('ha-sensors-config');
+  sensorsConfig.style.display = enabled ? 'block' : 'none';
+
+  const mqttConfig = document.getElementById('ha-mqtt-config');
+  const apiConfig = document.getElementById('ha-api-config');
+
+  if (enabled) {
+    // Hide all initially
+    mqttConfig.style.display = 'none';
+    apiConfig.style.display = 'none';
+
+    const source = document.getElementById('HA_POWER_SOURCE').value;
+    if (source === 'mqtt') {
+      mqttConfig.style.display = 'block';
+    } else if (source === 'ha_sensors') {
+      sensorsConfig.style.display = 'block';
+    } else if (source === 'api') {
+      apiConfig.style.display = 'block';
+    }
+  }
+});
+
+// HA_POWER_SOURCE visibility toggle
+document.getElementById('HA_POWER_SOURCE').addEventListener('change', function() {
+  const source = this.value;
+  const sensorsConfig = document.getElementById('ha-sensors-config');
+  const mqttConfig = document.getElementById('ha-mqtt-config');
+  const apiConfig = document.getElementById('ha-api-config');
+
+  // Hide all
+  sensorsConfig.style.display = 'none';
+  mqttConfig.style.display = 'none';
+  apiConfig.style.display = 'none';
+
+  // Show relevant config
+  if (source === 'ha_sensors') {
+    sensorsConfig.style.display = 'block';
+  } else if (source === 'mqtt') {
+    mqttConfig.style.display = 'block';
+  } else if (source === 'api') {
+    apiConfig.style.display = 'block';
+  }
+});
+
+load();
+</script>
 </body>
 </html>
