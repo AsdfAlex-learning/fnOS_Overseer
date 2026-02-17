@@ -1,9 +1,6 @@
-import importlib
 import logging
 
-flask = importlib.import_module("flask")
-request = flask.request
-jsonify = flask.jsonify
+from flask import request, jsonify
 from web.backend.api.v1 import bp
 from web.backend.models.data_models import ok, err
 from core.behavior import process_user_behavior

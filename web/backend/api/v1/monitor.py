@@ -1,6 +1,4 @@
-import importlib
-flask = importlib.import_module("flask")
-jsonify = flask.jsonify
+from flask import jsonify
 from web.backend.api.v1 import bp, require_super_admin
 from core.monitor import CPUMonitor, StorageMonitor, PowerCalculator
 from web.backend.models.data_models import ok
@@ -8,6 +6,7 @@ from web.backend.models.data_models import ok
 cpu = CPUMonitor()
 storage = StorageMonitor()
 power = PowerCalculator(cpu, storage)
+
 
 @bp.get("/monitor/cpu")
 @require_super_admin
@@ -17,10 +16,12 @@ def cpu_info():
     p = cpu.estimate_cpu_power(usage)
     return jsonify(ok({"info": info, "usage_percent": usage, "power_watts": p}))
 
+
 @bp.get("/monitor/storage")
 @require_super_admin
 def storage_info():
     return jsonify(ok(storage.get_storage_overview()))
+
 
 @bp.get("/monitor/power")
 @require_super_admin

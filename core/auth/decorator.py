@@ -6,15 +6,14 @@ authentication mechanisms:
 - require_super_admin: Requires fnOS super admin session
 - require_api_token: Requires API token (for webhooks, etc.)
 """
+
 import os
 from functools import wraps
 import logging
 from typing import Optional
 import importlib
 
-flask = importlib.import_module("flask")
-request = flask.request
-jsonify = flask.jsonify
+from flask import request, jsonify
 
 from .auth_config import auth_config
 from adapter.fnos.auth import Auth
@@ -38,6 +37,7 @@ def require_super_admin(f):
         def sensitive_endpoint():
             return jsonify({"data": "protected"})
     """
+
     @wraps(f)
     def wrapper(*args, **kwargs):
         # Layer 1: Check if auth is enabled (runtime locked)
@@ -89,6 +89,7 @@ def require_api_token(f):
         def webhook_endpoint():
             return jsonify({"status": "received"})
     """
+
     @wraps(f)
     def wrapper(*args, **kwargs):
         # Get expected token from environment
@@ -96,7 +97,9 @@ def require_api_token(f):
 
         # If no token is configured, skip validation (dev mode)
         if not expected_token:
-            logger.warning(f"WEBHOOK_TOKEN not configured, skipping validation for {request.path}")
+            logger.warning(
+                f"WEBHOOK_TOKEN not configured, skipping validation for {request.path}"
+            )
             return f(*args, **kwargs)
 
         # Extract token from multiple sources
@@ -108,7 +111,9 @@ def require_api_token(f):
 
         # Validate token
         if provided_token != expected_token:
-            logger.warning(f"Auth failed: Invalid API token for {request.path} from {request.remote_addr}")
+            logger.warning(
+                f"Auth failed: Invalid API token for {request.path} from {request.remote_addr}"
+            )
             return jsonify(err(401, "Unauthorized: Invalid API token")), 401
 
         # Token valid

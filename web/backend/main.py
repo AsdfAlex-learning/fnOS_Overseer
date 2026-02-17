@@ -2,8 +2,7 @@ import os
 import importlib
 from pathlib import Path
 
-flask = importlib.import_module("flask")
-Flask = flask.Flask
+from flask import Flask
 from web.backend.api.v1 import bp as api_v1_bp
 from core.schedule.scheduler import start as start_scheduler
 

@@ -2,9 +2,7 @@ import importlib
 from web.backend.models.data_models import ok, err
 from core.auth import require_super_admin, require_api_token
 
-flask = importlib.import_module("flask")
-Blueprint = flask.Blueprint
-jsonify = flask.jsonify
+from flask import Blueprint, jsonify
 
 bp = Blueprint("api_v1", __name__, url_prefix="/api/v1")
 
