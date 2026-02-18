@@ -19,10 +19,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p logs data/reports
+RUN mkdir -p logs data/reports && chmod +x docker/entrypoint.sh
 
 # Expose port
 EXPOSE 8000
 
 # Run the application
-CMD ["python", "-u", "web/backend/main.py"]
+ENTRYPOINT ["docker/entrypoint.sh"]
