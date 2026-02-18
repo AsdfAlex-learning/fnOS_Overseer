@@ -1,13 +1,13 @@
 import importlib
 from zoneinfo import ZoneInfo
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 from core.schedule.tasks import run_daily_report
 from core.config.config_manager import get_value
 
 def create_scheduler(timezone: str = "Asia/Shanghai"):
-    bg = importlib.import_module("apscheduler.schedulers.background")
-    cron = importlib.import_module("apscheduler.triggers.cron")
     tz = ZoneInfo(timezone) if timezone else None
-    scheduler = bg.BackgroundScheduler(timezone=tz)
+    scheduler = BackgroundScheduler(timezone=tz)
 
     # Read report time from config
     report_time_str = get_value("schedule.report_time", "08:00")
@@ -17,7 +17,7 @@ def create_scheduler(timezone: str = "Asia/Shanghai"):
         # Fallback to default if parsing fails
         hour, minute = 0, 30
 
-    trigger = cron.CronTrigger(hour=hour, minute=minute, timezone=tz)
+    trigger = CronTrigger(hour=hour, minute=minute, timezone=tz)
     scheduler.add_job(run_daily_report, trigger, id="daily_report", replace_existing=True)
     return scheduler
 
